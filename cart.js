@@ -52,7 +52,7 @@ const app = Vue.createApp({
     },
     openProductModal(id) {
       this.select_product = id;
-      this.$refs.productModal.openModal();
+      // this.$refs.productModal.openModal();
     },
     getCart() {
       axios.get(`${apiUrl}/api/${apiPath}/cart`).then((res) => {
@@ -88,6 +88,11 @@ const app = Vue.createApp({
       });
     },
     updateCartItem(item) {
+      if (item.qty <= 0) {
+        alert('商品數量請勿小於 0');
+        this.getCart();
+        return;
+      }
       const data = {
         product_id: item.id,
         qty: item.qty,
@@ -133,6 +138,13 @@ app.component('product-modal', {
     id() {
       this.getProduct();
     },
+    product_count(val) {
+      if (val <= 0) {
+        // console.log(val);
+        alert('商品數量請勿小於 0');
+        this.product_count = 1;
+      }
+    },
   },
   methods: {
     openModal() {
@@ -144,6 +156,7 @@ app.component('product-modal', {
     getProduct() {
       axios.get(`${apiUrl}/api/${apiPath}/product/${this.id}`).then((res) => {
         this.product = res.data.product;
+        this.modal.show();
       });
     },
     addToCart() {
